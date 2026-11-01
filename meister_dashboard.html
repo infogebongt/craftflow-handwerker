@@ -128,13 +128,13 @@
     const $ = id => document.getElementById(id);
     const DONE = 'Abgeschlossen & Verrechnet';
     const CATEGORIES = [
-      { key: 'Lehrling', label: 'Lehrling / Auszubildender', rate: 45, role: 'Auszubildender' },
-      { key: 'Techniker', label: 'Ausgebildeter Techniker / Geselle', rate: 95, role: 'Ausgebildeter Techniker' },
-      { key: 'Meister', label: 'Meister / Cheffunktion', rate: 125, role: 'Meister' }
+      { key: 'Lehrling', label: 'Lehrling', rate: 45, role: 'Lehrling' },
+      { key: 'Arbeiter', label: 'Arbeiter', rate: 95, role: 'Arbeiter' },
+      { key: 'Meister', label: 'Meister', rate: 125, role: 'Meister' }
     ];
     const SEED_TEAM = [
       { name: 'Hans Müller', category: 'Meister', rate: 125, phone: '+41 79 111 22 33', status: 'Bereit' },
-      { name: 'Peter Keller', category: 'Techniker', rate: 95, phone: '+41 79 222 33 44', status: 'Unterwegs' },
+      { name: 'Peter Keller', category: 'Arbeiter', rate: 95, phone: '+41 79 222 33 44', status: 'Unterwegs' },
       { name: 'Lukas Meier', category: 'Lehrling', rate: 45, phone: '+41 79 333 44 55', status: 'Bereit' }
     ];
     const SEED_CUSTOMERS = [
@@ -208,7 +208,7 @@
       $('team-title').innerText = m ? '✏️ Teammitglied bearbeiten' : '👷 Teammitglied anlegen';
       $('t-id').value = m ? m.id : '';
       $('t-name').value = m ? m.name : '';
-      $('t-cat').value = m ? m.category : 'Techniker';
+      $('t-cat').value = m ? m.category : 'Arbeiter';
       $('t-rate').value = m ? m.rate : 95;
       $('t-phone').value = m ? m.phone : '';
       openModal('modal-team');

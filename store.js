@@ -109,8 +109,8 @@
       materialDesc: '2x Steckdose UP, Kabel', labor: '187.50', mat: '45.00', fee: '0.00', netto: '232.50', vat: '18.83', brutto: '251.33', date: new Date().toLocaleDateString('de-CH') };
     lset('team', [
       { id: 1, created_at: now, name: 'Hans Müller', category: 'Meister', role: 'Meister', rate: 125, phone: '+41 79 111 22 33', status: 'Bereit' },
-      { id: 2, created_at: now, name: 'Peter Keller', category: 'Techniker', role: 'Ausgebildeter Techniker', rate: 95, phone: '+41 79 222 33 44', status: 'Unterwegs' },
-      { id: 3, created_at: now, name: 'Lukas Meier', category: 'Lehrling', role: 'Auszubildender', rate: 45, phone: '+41 79 333 44 55', status: 'Bereit' }
+      { id: 2, created_at: now, name: 'Peter Keller', category: 'Arbeiter', role: 'Arbeiter', rate: 95, phone: '+41 79 222 33 44', status: 'Unterwegs' },
+      { id: 3, created_at: now, name: 'Lukas Meier', category: 'Lehrling', role: 'Lehrling', rate: 45, phone: '+41 79 333 44 55', status: 'Bereit' }
     ]);
     lset('customers', [
       { id: 1, created_at: now, name: 'Markus Weber', email: 'markus.weber@example.ch', phone: '+41 79 987 65 43', address: 'Bahnhofstr. 12, 8001 Zürich', objects: 'Einfamilienhaus mit Ölheizung (Baujahr 2004)', notes: 'Stammkunde seit 2023' },

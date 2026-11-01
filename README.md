@@ -33,4 +33,4 @@ Meldung, Einsatzplanung, Rapport und Rechnung für Handwerksbetriebe (Sanitär, 
 
 ## Hinweise
 
-Stundensätze (Lehrling 45 / Techniker 95 / Meister 125 CHF/h) sind Beispielwerte, MwSt. 8.1 % (CH). Vor echten Kundendaten: Datenschutzerklärung und Auftragsverarbeitung mit Supabase klären.
+Stundensätze (Lehrling 45 / Arbeiter 95 / Meister 125 CHF/h) sind Beispielwerte, MwSt. 8.1 % (CH). Vor echten Kundendaten: Datenschutzerklärung und Auftragsverarbeitung mit Supabase klären.
