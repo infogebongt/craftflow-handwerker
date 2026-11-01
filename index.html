@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraftFlow – Die Betriebs-App für Handwerker</title>
+  <meta name="description" content="Schadenmeldungen annehmen, Monteure einteilen, Rapporte und Rechnungen schreiben: CraftFlow bringt Ihren Handwerksbetrieb in eine App. Einmalige Einrichtung CHF 1'500.00." />
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: {
+        fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'], display: ['Fraunces', 'Georgia', 'serif'] },
+        colors: { ink: '#14161c', cream: '#fbf7f0', sand: '#f3e8d3', brand: { 50:'#fffbeb', 100:'#fde9b4', 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706', 700:'#b45309', 900:'#3b1d06' }, signal: '#e5391f' }
+      } }
+    };
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body { background: #fbf7f0; color: #14161c; }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+    .reveal.in { opacity: 1; transform: none; }
+    @keyframes floaty { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-10px) } }
+    .floaty { animation: floaty 6s ease-in-out infinite; }
+    .floaty.d { animation-delay: -3s; }
+    .blob { border-radius: 42% 58% 55% 45% / 48% 42% 58% 52%; }
+    .stripes { background-image: repeating-linear-gradient(-45deg, #14161c 0 14px, #f59e0b 14px 28px); }
+    @media (prefers-reduced-motion: reduce) { .reveal { opacity: 1; transform: none; transition: none } .floaty { animation: none } html { scroll-behavior: auto } }
+  </style>
+</head>
+<body class="font-sans antialiased">
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-50 backdrop-blur bg-cream/85 border-b border-ink/5">
+    <div class="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
+      <a href="#top" class="flex items-center gap-2 font-display font-extrabold text-xl"><span class="w-8 h-8 rounded-lg bg-ink text-brand-500 grid place-items-center text-lg">🔧</span> CraftFlow</a>
+      <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-ink/70">
+        <a href="#module" class="hover:text-ink">Module</a>
+        <a href="#ablauf" class="hover:text-ink">So läuft es</a>
+        <a href="#preis" class="hover:text-ink">Preis</a>
+        <a href="#faq" class="hover:text-ink">Fragen</a>
+      </nav>
+      <a href="apps.html?demo=1" class="text-sm font-semibold bg-ink text-cream px-4 py-2 rounded-full hover:bg-brand-600 transition">Demo ansehen</a>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section id="top" class="relative overflow-hidden">
+    <div class="absolute -top-32 -right-32 w-[560px] h-[560px] bg-brand-100 blob"></div>
+    <div class="absolute bottom-0 -left-24 w-72 h-72 bg-sand blob"></div>
+    <div class="relative max-w-6xl mx-auto px-5 pt-14 pb-20 md:pt-20 md:pb-28 grid md:grid-cols-2 gap-12 items-center">
+      <div class="reveal">
+        <p class="inline-flex items-center gap-2 text-xs font-bold tracking-wide uppercase bg-white border border-ink/10 rounded-full px-3 py-1.5 mb-6">
+          <span class="w-2 h-2 rounded-full bg-signal animate-pulse"></span> Für Handwerksbetriebe
+        </p>
+        <h1 class="font-display font-extrabold text-5xl md:text-6xl leading-[1.04] tracking-tight">
+          Jeder Notfall landet beim <span class="text-brand-600 italic">richtigen Monteur.</span>
+        </h1>
+        <p class="mt-6 text-lg md:text-xl text-ink/70 max-w-xl leading-relaxed">
+          CraftFlow ist die Betriebs-App für Handwerker: Schadenmeldungen, Einsatzplanung, Rapporte und Rechnungen an einem Ort. Auf dem Handy, auf der Baustelle und im Büro.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="#preis" class="bg-signal text-white font-bold px-7 py-3.5 rounded-full shadow-lg shadow-signal/30 hover:-translate-y-0.5 transition">Preis ansehen</a>
+          <a href="apps.html?demo=1" class="bg-white border border-ink/15 font-bold px-7 py-3.5 rounded-full hover:border-ink transition">Live-Demo öffnen →</a>
+        </div>
+        <ul class="mt-8 flex flex-wrap gap-x-6 gap-y-2 text-sm font-medium text-ink/70">
+          <li>✓ Einmalig CHF 1'500.00</li><li>✓ Läuft im Browser</li><li>✓ Mit Ihrem Firmennamen</li>
+        </ul>
+      </div>
+
+      <div class="relative reveal">
+        <div class="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-ink/25 rotate-1 aspect-[4/5] md:aspect-[5/6]">
+          <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=1100&q=80" alt="Handwerker mit Schutzhelm und Handschuhen bei der Arbeit" class="w-full h-full object-cover" fetchpriority="high">
+        </div>
+        <div class="floaty absolute -left-4 md:-left-10 top-10 bg-white rounded-2xl shadow-xl p-4 w-60 border border-ink/5">
+          <div class="flex items-center justify-between text-[11px] font-bold">
+            <span class="text-red-600 bg-red-50 px-2 py-0.5 rounded-full">🔴 Notfall</span><span class="text-ink/40">vor 2 Min.</span>
+          </div>
+          <p class="mt-2 font-bold">🔧 Heizung Keller <span class="font-normal text-ink/50 text-sm">(Heizung)</span></p>
+          <p class="text-sm text-ink/60 leading-snug">Wasser tropft aus dem Kessel, Heizung ausgefallen</p>
+        </div>
+        <div class="floaty d absolute -right-3 md:-right-8 bottom-10 bg-white rounded-2xl shadow-xl p-4 w-56 border border-ink/5">
+          <p class="text-[11px] font-bold text-brand-700 bg-brand-50 inline-block px-2 py-0.5 rounded-full">✓ Verrechnet</p>
+          <p class="mt-2 text-sm text-ink/60">Rechnung RE-2026-0042</p>
+          <p class="font-display font-extrabold text-2xl">CHF 251.33</p>
+        </div>
+      </div>
+    </div>
+    <div class="stripes h-2.5"></div>
+  </section>
+
+  <!-- PAIN -->
+  <section class="bg-ink text-cream">
+    <div class="max-w-6xl mx-auto px-5 py-16 md:py-20">
+      <h2 class="reveal font-display font-extrabold text-3xl md:text-5xl max-w-3xl leading-tight">Das Telefon klingelt. Gerade jetzt, mitten auf der Baustelle.</h2>
+      <div class="mt-10 grid md:grid-cols-3 gap-5">
+        <div class="reveal rounded-3xl bg-white/5 border border-white/10 p-6"><p class="text-3xl">📞</p><h3 class="mt-3 font-bold text-lg">Notfälle gehen unter</h3><p class="mt-1 text-cream/65">Zettel, Anrufbeantworter, WhatsApp: Wer hat den Auftrag gesehen, wer fährt hin?</p></div>
+        <div class="reveal rounded-3xl bg-white/5 border border-white/10 p-6"><p class="text-3xl">🗂️</p><h3 class="mt-3 font-bold text-lg">Daten an fünf Orten</h3><p class="mt-1 text-cream/65">Kunden in Excel, Anlagen im Kopf, Stunden auf dem Zettel. Nichts passt zusammen.</p></div>
+        <div class="reveal rounded-3xl bg-white/5 border border-white/10 p-6"><p class="text-3xl">🌙</p><h3 class="mt-3 font-bold text-lg">Rapporte am Abend</h3><p class="mt-1 text-cream/65">Nach Feierabend noch Stunden, Material und MwSt. zusammenrechnen.</p></div>
+      </div>
+      <p class="reveal mt-10 text-xl md:text-2xl font-display font-semibold text-brand-400">CraftFlow ersetzt das alles durch eine einzige App.</p>
+    </div>
+  </section>
+
+  <!-- MODULES -->
+  <section id="module" class="max-w-6xl mx-auto px-5 py-20 md:py-28 space-y-24 md:space-y-32">
+    <div class="max-w-2xl reveal">
+      <p class="text-brand-700 font-bold text-sm uppercase tracking-wide">Drei Module, ein System</p>
+      <h2 class="mt-2 font-display font-extrabold text-4xl md:text-5xl leading-tight">Für alle, die in Ihrem Betrieb arbeiten.</h2>
+    </div>
+
+    <!-- 1 Portal -->
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="reveal relative">
+        <div class="rounded-[2rem] overflow-hidden aspect-[4/3] shadow-xl"><img loading="lazy" src="https://images.unsplash.com/photo-1676210134188-4c05dd172f89?auto=format&fit=crop&w=1000&q=80" alt="Sanitärinstallateur arbeitet am Siphon unter dem Waschbecken" class="w-full h-full object-cover"></div>
+        <div class="absolute -bottom-8 right-2 md:-right-6 w-40 md:w-44 bg-ink rounded-[1.6rem] p-2 shadow-2xl rotate-3">
+          <div class="bg-slate-950 rounded-[1.2rem] p-3 space-y-2">
+            <div class="h-2 w-16 rounded bg-brand-400"></div>
+            <div class="h-5 rounded bg-slate-800"></div><div class="h-5 rounded bg-slate-800"></div>
+            <div class="grid grid-cols-2 gap-1.5"><div class="h-5 rounded bg-slate-800"></div><div class="h-5 rounded bg-slate-800"></div></div>
+            <div class="h-5 rounded bg-orange-500/30 border border-orange-400/40"></div>
+            <div class="h-8 rounded bg-slate-800"></div>
+            <div class="h-6 rounded-lg bg-brand-500"></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="inline-block bg-signal/10 text-signal font-bold text-xs px-3 py-1 rounded-full">FÜR KUNDEN</span>
+        <h3 class="mt-3 font-display font-extrabold text-3xl md:text-4xl">Das Portal, das rund um die Uhr annimmt.</h3>
+        <p class="mt-4 text-lg text-ink/70 leading-relaxed">Ihre Kundschaft meldet Objekt, Gewerk und Schaden selbst, mit Dringlichkeit von «Normal» bis «Notfall». Die Daten merkt sich das Handy, beim nächsten Mal ist alles vorausgefüllt.</p>
+        <ul class="mt-5 space-y-2 text-ink/80">
+          <li>✓ Status des Auftrags live verfolgen</li><li>✓ Bei akuter Gefahr direkt zur Telefonnummer der Firma</li><li>✓ Kein Konto, keine Hürde</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 2 Monteur-App -->
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="reveal md:order-2 relative">
+        <div class="rounded-[2rem] overflow-hidden aspect-[4/3] shadow-xl"><img loading="lazy" src="https://images.unsplash.com/photo-1732660780054-0cf9fadb9d30?auto=format&fit=crop&w=1000&q=80" alt="Lächelnder Elektriker am Verteilerkasten" class="w-full h-full object-cover"></div>
+        <div class="absolute -bottom-8 left-2 md:-left-6 w-52 bg-white rounded-2xl p-4 shadow-2xl -rotate-2 border border-ink/5">
+          <p class="text-[11px] font-bold text-brand-700">📝 Einsatz dokumentieren</p>
+          <div class="mt-2 space-y-1.5"><div class="h-2.5 rounded bg-ink/10 w-full"></div><div class="h-2.5 rounded bg-ink/10 w-4/5"></div><div class="h-2.5 rounded bg-ink/10 w-3/5"></div></div>
+          <div class="mt-3 text-xs flex justify-between"><span class="text-ink/50">Total</span><b>CHF 251.33</b></div>
+        </div>
+      </div>
+      <div class="reveal md:order-1">
+        <span class="inline-block bg-brand-100 text-brand-700 font-bold text-xs px-3 py-1 rounded-full">FÜR MONTEURE</span>
+        <h3 class="mt-3 font-display font-extrabold text-3xl md:text-4xl">Die Monteur-App für unterwegs.</h3>
+        <p class="mt-4 text-lg text-ink/70 leading-relaxed">Jede Person sieht nur ihre zugewiesenen Aufträge. Ein Tipp zur Navigation zum Einsatzort, ein Tipp zum Anrufen des Kunden. Ursache, Arbeiten und Material werden direkt vor Ort erfasst, und der Rechnungsbetrag steht schon.</p>
+        <ul class="mt-5 space-y-2 text-ink/80">
+          <li>✓ Navigation und Anruf mit einem Tipp</li><li>✓ Rapport in unter einer Minute</li><li>✓ Stundensatz je Lehrling, Techniker und Meister hinterlegt</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- 3 Zentrale -->
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="reveal relative">
+        <div class="rounded-[2rem] overflow-hidden aspect-[4/3] shadow-xl"><img loading="lazy" src="https://images.unsplash.com/photo-1732395805034-e0bf859665e5?auto=format&fit=crop&w=1000&q=80" alt="Lächelnder Handwerker in blauer Arbeitskleidung" class="w-full h-full object-cover"></div>
+        <div class="hidden sm:block absolute -bottom-10 -right-6 w-64 bg-slate-950 rounded-xl shadow-2xl overflow-hidden rotate-2 border border-slate-800">
+          <div class="flex gap-1 p-2 bg-slate-900"><i class="w-2 h-2 rounded-full bg-red-400"></i><i class="w-2 h-2 rounded-full bg-yellow-400"></i><i class="w-2 h-2 rounded-full bg-green-400"></i></div>
+          <div class="p-3 space-y-2">
+            <div class="flex gap-1.5"><b class="h-4 w-12 rounded bg-brand-500"></b><b class="h-4 w-10 rounded bg-slate-800"></b><b class="h-4 w-10 rounded bg-slate-800"></b></div>
+            <div class="h-9 rounded bg-slate-900 border-l-2 border-red-500"></div>
+            <div class="h-9 rounded bg-slate-900 border-l-2 border-brand-500"></div>
+            <div class="h-9 rounded bg-slate-900 border-l-2 border-sky-500"></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <span class="inline-block bg-ink/10 text-ink font-bold text-xs px-3 py-1 rounded-full">FÜR DEN MEISTER</span>
+        <h3 class="mt-3 font-display font-extrabold text-3xl md:text-4xl">Die Zentrale: der Überblick über alles.</h3>
+        <p class="mt-4 text-lg text-ink/70 leading-relaxed">Neue Aufträge erscheinen sofort, mit Dringlichkeit und Adresse. Auftrag zuteilen, Rapport erfassen, Rechnung als PDF mit MwSt. herunterladen. Dazu Kundenkartei mit Objekten und das Team mit Stundensätzen.</p>
+        <ul class="mt-5 space-y-2 text-ink/80">
+          <li>✓ Echtzeit: neue Notfälle ohne Neuladen</li><li>✓ Rechnung als PDF, MwSt. 8.1 % automatisch</li><li>✓ Kundenkartei mit Objekten und Notizen</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHOTO BAND -->
+  <section class="relative h-[360px] md:h-[460px] overflow-hidden">
+    <img loading="lazy" src="https://images.unsplash.com/photo-1596495717678-69df9f89c2a3?auto=format&fit=crop&w=1800&q=80" alt="Heizungstechniker bei der Wartung einer Anlage" class="absolute inset-0 w-full h-full object-cover">
+    <div class="absolute inset-0 bg-gradient-to-r from-ink/90 via-ink/55 to-transparent"></div>
+    <div class="relative max-w-6xl mx-auto px-5 h-full flex items-center">
+      <p class="reveal font-display font-extrabold text-4xl md:text-6xl text-cream max-w-2xl leading-tight">Mehr Zeit auf der Baustelle.<br><span class="text-brand-400">Weniger im Büro.</span></p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="max-w-6xl mx-auto px-5 py-20 md:py-28">
+    <h2 class="reveal font-display font-extrabold text-4xl md:text-5xl max-w-2xl leading-tight">Alles drin, was ein Betrieb täglich braucht.</h2>
+    <div class="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">🚦</p><h3 class="mt-3 font-bold text-lg">Dringlichkeit auf einen Blick</h3><p class="mt-1 text-ink/65">Notfall, dringend oder normal: Farben und Sortierung zeigen, was zuerst dran ist.</p></div>
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">🚗</p><h3 class="mt-3 font-bold text-lg">Einsatzort mit Navi</h3><p class="mt-1 text-ink/65">Die Adresse des Kunden öffnet direkt die Karte. Der Team-Status zeigt, wer unterwegs ist.</p></div>
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">🧾</p><h3 class="mt-3 font-bold text-lg">Rapport und Rechnung per Klick</h3><p class="mt-1 text-ink/65">Arbeitszeit, Material und Anfahrt ergeben die Rechnung als PDF, inklusive MwSt.</p></div>
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">🏠</p><h3 class="mt-3 font-bold text-lg">Kunden und Objekte</h3><p class="mt-1 text-ink/65">Kontakt, Adresse und alle Anlagen eines Kunden in einer Karteikarte.</p></div>
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">📲</p><h3 class="mt-3 font-bold text-lg">Als App aufs Handy</h3><p class="mt-1 text-ink/65">Ein Tipp auf «Zum Home-Bildschirm», und CraftFlow startet wie eine normale App.</p></div>
+      <div class="reveal bg-white rounded-3xl p-6 border border-ink/5 hover:shadow-xl hover:-translate-y-1 transition"><p class="text-3xl">🎨</p><h3 class="mt-3 font-bold text-lg">Mit Ihrem Namen</h3><p class="mt-1 text-ink/65">Firmenname, Adresse, MwSt.-Nr. und Stundensätze: auf Ihrer Rechnung steht Ihr Betrieb.</p></div>
+    </div>
+  </section>
+
+  <!-- TRADES -->
+  <section class="bg-sand">
+    <div class="max-w-6xl mx-auto px-5 py-16 md:py-20">
+      <h2 class="reveal font-display font-extrabold text-3xl md:text-4xl max-w-2xl leading-tight">Für jedes Gewerk mit Einsätzen vor Ort.</h2>
+      <div class="reveal mt-8 flex flex-wrap gap-3 text-sm font-semibold">
+        <span class="bg-white rounded-full px-4 py-2 border border-ink/10">🚿 Sanitär</span><span class="bg-white rounded-full px-4 py-2 border border-ink/10">🔥 Heizung</span>
+        <span class="bg-white rounded-full px-4 py-2 border border-ink/10">⚡ Elektro</span><span class="bg-white rounded-full px-4 py-2 border border-ink/10">🔑 Schlüsseldienst</span>
+        <span class="bg-white rounded-full px-4 py-2 border border-ink/10">🏠 Dach und Spengler</span><span class="bg-white rounded-full px-4 py-2 border border-ink/10">🪟 Glaser</span>
+        <span class="bg-white rounded-full px-4 py-2 border border-ink/10">🧰 Rohrreinigung</span><span class="bg-white rounded-full px-4 py-2 border border-ink/10">❄️ Kälte und Lüftung</span>
+        <span class="bg-white rounded-full px-4 py-2 border border-ink/10">🧹 Kaminfeger</span><span class="bg-white rounded-full px-4 py-2 border border-ink/10">🔧 Hauswartung</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW -->
+  <section id="ablauf" class="bg-ink text-cream">
+    <div class="max-w-6xl mx-auto px-5 py-20 md:py-24">
+      <h2 class="reveal font-display font-extrabold text-4xl md:text-5xl">In drei Schritten startklar.</h2>
+      <div class="mt-12 grid md:grid-cols-3 gap-6">
+        <div class="reveal"><p class="font-display font-extrabold text-6xl text-brand-400/50">1</p><h3 class="font-bold text-xl mt-1">Gespräch</h3><p class="mt-2 text-cream/70">Wir klären, wie Ihr Betrieb arbeitet: Team, Tarife, Pikettdienst.</p></div>
+        <div class="reveal"><p class="font-display font-extrabold text-6xl text-brand-400/50">2</p><h3 class="font-bold text-xl mt-1">Einrichtung</h3><p class="mt-2 text-cream/70">Wir richten CraftFlow mit Ihren Daten, Ihrem Team und Ihrem Namen ein.</p></div>
+        <div class="reveal"><p class="font-display font-extrabold text-6xl text-brand-400/50">3</p><h3 class="font-bold text-xl mt-1">Los geht's</h3><p class="mt-2 text-cream/70">Link ans Team, Link für die Kundschaft auf die Website oder den Firmenwagen. Fertig.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECURITY -->
+  <section class="max-w-6xl mx-auto px-5 py-20 md:py-24 grid md:grid-cols-2 gap-12 items-center">
+    <div class="reveal">
+      <p class="text-brand-700 font-bold text-sm uppercase tracking-wide">Sicherheit</p>
+      <h2 class="mt-2 font-display font-extrabold text-4xl leading-tight">Ihre Daten bleiben bei Ihnen.</h2>
+      <p class="mt-4 text-lg text-ink/70 leading-relaxed">Meister und Monteure melden sich mit E-Mail und Passwort an. Jede Person hat eine Rolle und sieht nur, was sie braucht. Ohne Anmeldung ist die Datenbank gesperrt.</p>
+    </div>
+    <div class="reveal grid grid-cols-2 gap-4">
+      <div class="bg-white rounded-2xl p-5 border border-ink/5"><p class="text-2xl">🔐</p><p class="mt-2 font-bold">Anmeldung</p><p class="text-sm text-ink/60">E-Mail und Passwort für Meister und Monteure</p></div>
+      <div class="bg-white rounded-2xl p-5 border border-ink/5"><p class="text-2xl">👥</p><p class="mt-2 font-bold">Rollen</p><p class="text-sm text-ink/60">Meister und Monteure mit eigenen Rechten</p></div>
+      <div class="bg-white rounded-2xl p-5 border border-ink/5"><p class="text-2xl">🙈</p><p class="mt-2 font-bold">Nur eigene Aufträge</p><p class="text-sm text-ink/60">Kunden sehen nur ihre eigenen Meldungen</p></div>
+      <div class="bg-white rounded-2xl p-5 border border-ink/5"><p class="text-2xl">🗄️</p><p class="mt-2 font-bold">Eigene Datenbank</p><p class="text-sm text-ink/60">Ihre Betriebsdaten liegen getrennt von anderen Betrieben</p></div>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section id="preis" class="relative overflow-hidden bg-sand">
+    <div class="max-w-6xl mx-auto px-5 py-20 md:py-28 grid md:grid-cols-5 gap-12 items-center">
+      <div class="md:col-span-2 reveal">
+        <p class="text-brand-700 font-bold text-sm uppercase tracking-wide">Preis</p>
+        <h2 class="mt-2 font-display font-extrabold text-4xl md:text-5xl leading-tight">Einmal einrichten. Kein Abo.</h2>
+        <p class="mt-4 text-lg text-ink/70 leading-relaxed">Ein Preis, alles drin. Keine Lizenz pro Person, keine monatliche Software-Gebühr.</p>
+      </div>
+      <div class="md:col-span-3 reveal">
+        <div class="relative bg-white rounded-[2rem] shadow-2xl shadow-ink/10 p-8 md:p-10 border border-ink/5">
+          <span class="absolute -top-3 left-8 bg-signal text-white text-xs font-bold px-3 py-1 rounded-full">Komplettpaket</span>
+          <p class="text-sm text-ink/50 font-semibold">Einmalige Einrichtung</p>
+          <p class="mt-1 flex items-baseline gap-2"><span class="font-display font-extrabold text-6xl md:text-7xl">CHF 1'500</span><span class="text-2xl font-bold text-ink/50">.00</span></p>
+          <ul class="mt-6 grid sm:grid-cols-2 gap-x-6 gap-y-3 text-ink/80">
+            <li>✓ Kundenportal</li>
+            <li>✓ Monteur-App für das Team</li>
+            <li>✓ Meister-Zentrale mit Buchhaltung</li>
+            <li>✓ Rechnungen als PDF, MwSt.</li>
+            <li>✓ Ihr Firmenname und Ihre Tarife</li>
+            <li>✓ Anmeldung und Rollen</li>
+            <li>✓ Team und Kunden erfasst</li>
+            <li>✓ Als App aufs Handy installierbar</li>
+          </ul>
+          <a href="#kontakt" class="mt-8 block text-center bg-ink text-cream font-bold py-4 rounded-full hover:bg-brand-600 transition">Jetzt anfragen</a>
+          <p class="mt-3 text-center text-xs text-ink/45">Preis in CHF.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section id="faq" class="max-w-3xl mx-auto px-5 py-20 md:py-24">
+    <h2 class="reveal font-display font-extrabold text-4xl md:text-5xl">Häufige Fragen</h2>
+    <div class="mt-10 divide-y divide-ink/10 border-y border-ink/10">
+      <details class="group py-5 reveal"><summary class="flex justify-between items-center cursor-pointer font-bold text-lg list-none">Müssen wir etwas installieren?<span class="text-2xl group-open:rotate-45 transition">+</span></summary><p class="mt-3 text-ink/70">Nein. CraftFlow läuft im Browser auf Handy, Tablet und PC. Wer will, legt es mit einem Tipp als App auf den Home-Bildschirm.</p></details>
+      <details class="group py-5 reveal"><summary class="flex justify-between items-center cursor-pointer font-bold text-lg list-none">Gibt es laufende Kosten?<span class="text-2xl group-open:rotate-45 transition">+</span></summary><p class="mt-3 text-ink/70">Für CraftFlow selbst fällt kein Abo an. Hosting und Datenbank laufen auf den kostenlosen Plänen der Anbieter. Bei sehr grossem Datenvolumen kann dort ein kostenpflichtiger Plan nötig werden.</p></details>
+      <details class="group py-5 reveal"><summary class="flex justify-between items-center cursor-pointer font-bold text-lg list-none">Wie sicher sind unsere Daten?<span class="text-2xl group-open:rotate-45 transition">+</span></summary><p class="mt-3 text-ink/70">Meister und Monteure melden sich mit E-Mail und Passwort an, Rollen begrenzen die Rechte, und Kunden sehen nur ihre eigenen Meldungen.</p></details>
+      <details class="group py-5 reveal"><summary class="flex justify-between items-center cursor-pointer font-bold text-lg list-none">Können wir Name, Tarife und Rechnung anpassen?<span class="text-2xl group-open:rotate-45 transition">+</span></summary><p class="mt-3 text-ink/70">Ja. Firmenname, Adresse, MwSt.-Nummer, Stundensätze je Funktion und Zahlungsfrist stellen wir für Sie ein.</p></details>
+      <details class="group py-5 reveal"><summary class="flex justify-between items-center cursor-pointer font-bold text-lg list-none">Kann ich es vorher ausprobieren?<span class="text-2xl group-open:rotate-45 transition">+</span></summary><p class="mt-3 text-ink/70">Ja, die <a class="underline text-brand-700 font-semibold" href="apps.html?demo=1">Live-Demo</a> zeigt die Apps mit Beispieldaten.</p></details>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="kontakt" class="bg-ink text-cream">
+    <div class="max-w-4xl mx-auto px-5 py-20 text-center">
+      <p class="text-5xl">🔧</p>
+      <h2 class="reveal mt-4 font-display font-extrabold text-4xl md:text-5xl leading-tight">Bereit für einen Betrieb ohne Zettelwirtschaft?</h2>
+      <p class="reveal mt-4 text-cream/70 text-lg">Schreiben Sie uns kurz, wir melden uns für ein unverbindliches Gespräch.</p>
+      <form id="contact-form" class="reveal mt-8 grid sm:grid-cols-2 gap-3 text-left">
+        <input name="name" required placeholder="Ihr Name" class="rounded-xl bg-white/10 border border-white/15 px-4 py-3.5 placeholder-cream/40 focus:outline-none focus:border-brand-400">
+        <input name="firma" placeholder="Name der Firma" class="rounded-xl bg-white/10 border border-white/15 px-4 py-3.5 placeholder-cream/40 focus:outline-none focus:border-brand-400">
+        <input name="kontakt" required placeholder="E-Mail oder Telefon" class="sm:col-span-2 rounded-xl bg-white/10 border border-white/15 px-4 py-3.5 placeholder-cream/40 focus:outline-none focus:border-brand-400">
+        <button class="sm:col-span-2 bg-signal text-white font-bold py-4 rounded-full shadow-lg shadow-signal/30 hover:-translate-y-0.5 transition">Anfrage senden</button>
+      </form>
+    </div>
+  </section>
+
+  <footer class="bg-ink text-cream/50 text-sm border-t border-white/10">
+    <div class="max-w-6xl mx-auto px-5 py-8 flex flex-col sm:flex-row justify-between gap-3">
+      <p>© 2026 CraftFlow. Fotos: <a class="underline" href="https://unsplash.com" target="_blank" rel="noopener">Unsplash</a></p>
+      <p><a class="hover:text-cream" href="apps.html?demo=1">Live-Demo</a></p>
+    </div>
+  </footer>
+
+  <script>
+    // Kontakt-Adresse für die Anfrage-Mails hier eintragen
+    const CONTACT_EMAIL = "infogebongt@gmail.com";
+
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+    document.getElementById('contact-form').addEventListener('submit', e => {
+      e.preventDefault();
+      if (!CONTACT_EMAIL) { alert('Die Kontaktadresse ist noch nicht hinterlegt.'); return; }
+      const f = new FormData(e.target);
+      const body = `Name: ${f.get('name')}\nFirma: ${f.get('firma')}\nKontakt: ${f.get('kontakt')}`;
+      location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent('CraftFlow Anfrage')}&body=${encodeURIComponent(body)}`;
+    });
+
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  </script>
+</body>
+</html>

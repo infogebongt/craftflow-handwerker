@@ -1,0 +1,26 @@
+const CACHE_NAME = 'craftflow-v1';
+const urlsToCache = [
+  './',
+  './index.html',
+  './apps.html',
+  './kunden_app.html',
+  './monteur_app.html',
+  './meister_dashboard.html',
+  './config.js',
+  './store.js',
+  './icon.svg'
+];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
+});
+
+self.addEventListener('fetch', event => {
+  if (event.request.method !== 'GET') return;
+  event.respondWith(
+    fetch(event.request).catch(() => caches.match(event.request))
+  );
+});
+

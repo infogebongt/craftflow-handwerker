@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CraftFlow – Apps öffnen</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans antialiased min-h-screen flex items-center justify-center p-4">
+
+  <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 text-center shadow-2xl">
+    <div>
+      <div class="text-4xl mb-2">🔧</div>
+      <h1 class="text-2xl font-bold text-amber-400">CraftFlow Suite</h1>
+      <p class="text-xs text-slate-400 mt-1">Wähle das Modul aus, das du öffnen möchtest:</p>
+    </div>
+
+    <button id="pwa-install-btn" onclick="installPWA()" class="hidden w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-lg shadow-amber-500/10">
+      📲 App auf Home-Bildschirm installieren
+    </button>
+
+    <div class="space-y-3">
+      <a href="index.html" class="block text-xs text-slate-500 hover:text-slate-300">← Zur Startseite</a>
+      <a href="kunden_app.html" class="block w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm rounded-2xl border border-slate-700 transition-all">
+        🚨 Kundenportal / Notfall melden
+      </a>
+      <a href="monteur_app.html" class="block w-full py-3.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-bold text-sm rounded-2xl border border-slate-700 transition-all">
+        👷 Monteur-App (Team)
+      </a>
+      <a href="meister_dashboard.html" class="block w-full py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm rounded-2xl transition-all shadow-lg shadow-amber-500/10">
+        💻 Meister-Zentrale
+      </a>
+    </div>
+  </div>
+
+  <script>
+    let deferredPrompt;
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('pwa-install-btn').classList.remove('hidden');
+    });
+    function installPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(r => {
+        if (r.outcome === 'accepted') document.getElementById('pwa-install-btn').classList.add('hidden');
+        deferredPrompt = null;
+      });
+    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  </script>
+  <script>
+    // Demo-Modus: Links zu den Apps bekommen ?demo=1
+    if (new URLSearchParams(location.search).get('demo') === '1') sessionStorage.setItem('tp_demo', '1');
+    if (sessionStorage.getItem('tp_demo') === '1') {
+      document.querySelectorAll('a[href$=".html"]').forEach(a => { if (!a.href.endsWith('index.html')) a.href += '?demo=1'; });
+      const h = document.querySelector('h1'); if (h) h.insertAdjacentHTML('afterend', '<p class="text-[11px] text-amber-400 mt-2">Demo mit Beispieldaten, keine echten Daten</p>');
+    }
+  </script>
+</body>
+</html>
+
