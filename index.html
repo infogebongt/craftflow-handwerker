@@ -39,6 +39,7 @@
       <a href="#top" class="flex items-center gap-2 font-display font-extrabold text-xl"><span class="w-8 h-8 rounded-lg bg-ink text-brand-500 grid place-items-center text-lg">🔧</span> CraftFlow</a>
       <nav class="hidden md:flex items-center gap-8 text-sm font-medium text-ink/70">
         <a href="#module" class="hover:text-ink">Module</a>
+        <a href="#film" class="hover:text-ink">Film</a>
         <a href="#ablauf" class="hover:text-ink">So läuft es</a>
         <a href="#preis" class="hover:text-ink">Preis</a>
         <a href="#faq" class="hover:text-ink">Fragen</a>
@@ -182,6 +183,52 @@
     </div>
   </section>
 
+  <!-- FILM -->
+  <section id="film" class="bg-ink text-cream">
+    <div class="max-w-5xl mx-auto px-5 py-20 md:py-24">
+      <p class="text-brand-400 font-bold text-sm uppercase tracking-wide reveal">Der Ablauf im Film</p>
+      <h2 class="mt-2 font-display font-extrabold text-4xl md:text-5xl leading-tight max-w-3xl reveal">Vom Notfall bis zur Rechnung. In einer Minute.</h2>
+      <p class="mt-4 text-cream/70 text-lg max-w-2xl reveal">Echte App, echte Demo-Daten: Ein Kunde meldet einen Heizungsausfall, die Zentrale teilt zu, der Arbeiter rapportiert, die Rechnung entsteht.</p>
+
+      <div class="mt-10 reveal">
+        <div class="relative w-full overflow-hidden rounded-3xl bg-gradient-to-br from-slate-800 to-slate-950 border border-white/10 shadow-2xl">
+          <div id="film-stage" class="origin-top-left" style="width:1000px;height:560px;position:relative">
+            <!-- Handy -->
+            <div style="position:absolute;left:24px;top:20px;width:272px;height:520px;border-radius:38px;background:#0b0f19;border:6px solid #2a3142;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5)">
+              <iframe id="film-portal" title="Kundenportal" style="position:absolute;left:0;top:0;width:390px;height:762px;border:0;transform:scale(.6667);transform-origin:top left;transition:opacity .5s"></iframe>
+              <iframe id="film-tech" title="Monteur-App" style="position:absolute;left:0;top:0;width:390px;height:762px;border:0;transform:scale(.6667);transform-origin:top left;opacity:0;pointer-events:none;transition:opacity .5s"></iframe>
+            </div>
+            <!-- Browser -->
+            <div style="position:absolute;left:322px;top:20px;width:654px;height:520px;border-radius:16px;background:#0b0f19;border:1px solid #2a3142;overflow:hidden;box-shadow:0 20px 50px rgba(0,0,0,.5)">
+              <div style="height:28px;background:#161b29;display:flex;align-items:center;gap:6px;padding:0 10px"><i style="width:9px;height:9px;border-radius:9px;background:#f87171"></i><i style="width:9px;height:9px;border-radius:9px;background:#fbbf24"></i><i style="width:9px;height:9px;border-radius:9px;background:#4ade80"></i><span style="margin-left:10px;font:11px Inter,sans-serif;color:#7b869e">craftflow / meister-zentrale</span></div>
+              <iframe id="film-dash" title="Meister-Zentrale" style="position:absolute;left:0;top:28px;width:1100px;height:827px;border:0;transform:scale(.5927);transform-origin:top left"></iframe>
+            </div>
+          </div>
+
+          <div id="film-end" class="hidden absolute inset-0 bg-ink/80 backdrop-blur-sm grid place-items-center text-center p-6">
+            <div>
+              <p class="font-display font-extrabold text-3xl md:text-4xl">So einfach läuft ein Auftrag.</p>
+              <div class="mt-6 flex flex-wrap justify-center gap-3">
+                <a href="apps.html?demo=1" class="bg-signal text-white font-bold px-6 py-3 rounded-full">Selbst ausprobieren →</a>
+                <button id="film-end-replay" class="bg-white/10 border border-white/20 font-bold px-6 py-3 rounded-full">↻ Nochmal ansehen</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5 flex items-center gap-3">
+          <button id="film-play" class="shrink-0 bg-white/10 border border-white/15 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/20">▶ Start</button>
+          <button id="film-replay" class="shrink-0 bg-white/10 border border-white/15 rounded-full px-4 py-2 text-sm font-semibold hover:bg-white/20" title="Von vorn">↻</button>
+          <div id="film-steps" class="flex-1 flex gap-1.5">
+            <span data-step="0" class="h-1.5 flex-1 rounded-full bg-white/20"></span><span data-step="1" class="h-1.5 flex-1 rounded-full bg-white/20"></span><span data-step="2" class="h-1.5 flex-1 rounded-full bg-white/20"></span><span data-step="3" class="h-1.5 flex-1 rounded-full bg-white/20"></span><span data-step="4" class="h-1.5 flex-1 rounded-full bg-white/20"></span>
+          </div>
+        </div>
+        <p id="film-caption" class="mt-4 text-lg md:text-xl font-semibold text-brand-400 min-h-[3.5rem]">Der Film startet automatisch.</p>
+        <div class="hidden"><div id="film-bar"></div></div>
+      </div>
+    </div>
+  </section>
+
   <!-- PHOTO BAND -->
   <section class="relative h-[360px] md:h-[460px] overflow-hidden">
     <img loading="lazy" src="https://images.unsplash.com/photo-1596495717678-69df9f89c2a3?auto=format&fit=crop&w=1800&q=80" alt="Heizungstechniker bei der Wartung einer Anlage" class="absolute inset-0 w-full h-full object-cover">
@@ -309,6 +356,7 @@
     </div>
   </footer>
 
+  <script src="film.js" charset="utf-8"></script>
   <script>
     // Kontakt-Adresse für die Anfrage-Mails hier eintragen
     const CONTACT_EMAIL = "infogebongt@gmail.com";

@@ -116,7 +116,7 @@
     const FIELDS = { name: 'cust-name', email: 'cust-email', phone: 'cust-phone', address: 'cust-address' };
 
     function myIds() {
-      try { return JSON.parse(localStorage.getItem('tp_my_tokens')) || []; } catch (e) { return []; }
+      try { return JSON.parse(localStorage.getItem(TP.ns + 'my_tokens')) || []; } catch (e) { return []; }
     }
 
     function showProfile(p) {
@@ -138,7 +138,7 @@
         return;
       }
 
-      for (const k in p) localStorage.setItem('tp_cust_' + k, p[k]);
+      for (const k in p) localStorage.setItem(TP.ns + 'cust_' + k, p[k]);
       showProfile(p);
 
       try {
@@ -147,7 +147,7 @@
           object_name: pet, trade: $('pet-trade').value, complaint,
           urgency: $('urgency').value
         });
-        localStorage.setItem('tp_my_tokens', JSON.stringify([t.token, ...myIds()]));
+        localStorage.setItem(TP.ns + 'my_tokens', JSON.stringify([t.token, ...myIds()]));
         $('complaint').value = '';
         alert('Vielen Dank! Ihre Anfrage wurde an die Firma übermittelt.');
         renderMine();
@@ -179,7 +179,7 @@
       $('practice-phone').href = 'tel:' + C.PRACTICE.phone.replace(/\s/g, '');
       const saved = {};
       for (const k in FIELDS) {
-        saved[k] = localStorage.getItem('tp_cust_' + k) || '';
+        saved[k] = localStorage.getItem(TP.ns + 'cust_' + k) || '';
         $(FIELDS[k]).value = saved[k];
       }
       if (saved.name && saved.address) showProfile(saved);

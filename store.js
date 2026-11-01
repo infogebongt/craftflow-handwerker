@@ -3,18 +3,22 @@
   const C = window.TP_CONFIG;
 
   // Demo-Modus für Interessenten: ?demo=1 → Beispieldaten nur im eigenen Browser, ohne Anmeldung, nie die Live-Datenbank.
-  if (new URLSearchParams(location.search).get('demo') === '1') sessionStorage.setItem('tp_demo', '1');
-  const demo = sessionStorage.getItem('tp_demo') === '1';
+  // ?film=1 → eigener Datenraum für das Erklärvideo auf der Homepage (stört die Demo der Besucher nicht).
+  const params = new URLSearchParams(location.search);
+  const film = params.get('film') === '1';
+  const NS = film ? 'tpf_' : 'tp_';
+  if (params.get('demo') === '1') sessionStorage.setItem('tp_demo', '1');
+  const demo = film || sessionStorage.getItem('tp_demo') === '1';
   const live = !demo && !!(C.SUPABASE_URL && C.SUPABASE_KEY && window.supabase);
   const sb = live ? window.supabase.createClient(C.SUPABASE_URL, C.SUPABASE_KEY) : null;
   const listeners = {};
 
-  const lget = t => { try { return JSON.parse(localStorage.getItem('tp_data_' + t)) || []; } catch (e) { return []; } };
-  const lset = (t, rows) => localStorage.setItem('tp_data_' + t, JSON.stringify(rows));
+  const lget = t => { try { return JSON.parse(localStorage.getItem(NS + 'data_' + t)) || []; } catch (e) { return []; } };
+  const lset = (t, rows) => localStorage.setItem(NS + 'data_' + t, JSON.stringify(rows));
   const emit = t => (listeners[t] || []).forEach(cb => cb());
 
   window.addEventListener('storage', e => {
-    if (e.key && e.key.startsWith('tp_data_')) emit(e.key.slice(8));
+    if (e.key && e.key.startsWith(NS + 'data_')) emit(e.key.slice(NS.length + 5));
   });
 
   const store = {
@@ -103,7 +107,7 @@
   };
 
   function seedDemo() {
-    if (!demo || localStorage.getItem('tp_demo_seeded')) return;
+    if (!demo || localStorage.getItem(NS + 'demo_seeded')) return;
     const now = new Date().toISOString();
     const done = { tech: 'Hans Müller', hours: 1.5, rate: 125, diagnosis: 'Bestehende Leitung geprüft, in Ordnung', treatment: 'Zwei Steckdosen gesetzt, Anschluss und Sicherung geprüft',
       materialDesc: '2x Steckdose UP, Kabel', labor: '187.50', mat: '45.00', fee: '0.00', netto: '232.50', vat: '18.83', brutto: '251.33', date: new Date().toLocaleDateString('de-CH') };
@@ -116,17 +120,18 @@
       { id: 1, created_at: now, name: 'Markus Weber', email: 'markus.weber@example.ch', phone: '+41 79 987 65 43', address: 'Bahnhofstr. 12, 8001 Zürich', objects: 'Einfamilienhaus mit Ölheizung (Baujahr 2004)', notes: 'Stammkunde seit 2023' },
       { id: 2, created_at: now, name: 'Stefan Fischer', email: 'stefan.fischer@example.ch', phone: '+41 78 555 44 33', address: 'Hauptstr. 88, 5400 Baden', objects: 'Mietwohnung 3. OG, Bad und Küche', notes: 'Schlüssel beim Nachbarn hinterlegt' }
     ]);
-    lset('tickets', [
+    const seedTickets = [
       { id: 1, created_at: now, customer_name: 'Markus Weber', email: 'markus.weber@example.ch', phone: '+41 79 987 65 43', address: 'Bahnhofstr. 12, 8001 Zürich', object_name: 'Heizung Keller', trade: 'Heizung', complaint: 'Heizung ausgefallen, Wasser tropft aus dem Kessel', urgency: 'Notfall', status: 'Neu', tech: null, report: null },
       { id: 2, created_at: now, customer_name: 'Stefan Fischer', email: 'stefan.fischer@example.ch', phone: '+41 78 555 44 33', address: 'Hauptstr. 88, 5400 Baden', object_name: 'WC Obergeschoss', trade: 'Sanitär', complaint: 'WC läuft ununterbrochen, Spülkasten defekt', urgency: 'Dringend', status: 'In Bearbeitung', tech: 'Peter Keller', report: null },
       { id: 3, created_at: now, customer_name: 'Lea Frei', email: 'lea.frei@example.ch', phone: '+41 76 123 45 67', address: 'Seestrasse 5, 8700 Küsnacht', object_name: 'Steckdosen Küche', trade: 'Elektro', complaint: 'Zwei zusätzliche Steckdosen in der Küche', urgency: 'Normal', status: 'Abgeschlossen & Verrechnet', tech: 'Hans Müller', report: done }
-    ]);
-    localStorage.setItem('tp_demo_seeded', '1');
+    ];
+    lset('tickets', film ? [seedTickets[2]] : seedTickets);
+    localStorage.setItem(NS + 'demo_seeded', '1');
   }
   seedDemo();
 
   function demoBar() {
-    if (!demo) return;
+    if (!demo || film) return;
     const bar = document.createElement('div');
     bar.style.cssText = 'position:fixed;left:50%;bottom:12px;transform:translateX(-50%);z-index:9999;background:#10201e;color:#fff8ef;font:600 12px Inter,system-ui,sans-serif;padding:8px 14px;border-radius:999px;box-shadow:0 8px 24px rgba(0,0,0,.35);display:flex;gap:12px;align-items:center;white-space:nowrap;max-width:94vw';
     bar.innerHTML = '<span>🔧 Demo mit Beispieldaten</span><a href="apps.html" style="color:#fbbf24">Alle Apps</a><a href="#" id="tp-demo-reset" style="color:#ff6b57">Zurücksetzen</a><a href="index.html" id="tp-demo-exit" style="color:#fff8ef;opacity:.7">Beenden</a>';
@@ -190,7 +195,7 @@
     }
   };
 
-  window.TP = { store, auth, esc, money, calcInvoice, C };
+  window.TP = { store, auth, esc, money, calcInvoice, C, ns: NS, film };
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

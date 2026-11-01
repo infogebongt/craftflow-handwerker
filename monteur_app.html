@@ -124,12 +124,12 @@
       try {
         [team, tickets] = await Promise.all([store.list('team'), store.list('tickets')]);
       } catch (e) { $('list').innerHTML = `<p class="text-xs text-red-400">Fehler: ${esc(e.message)}</p>`; return; }
-      const saved = localStorage.getItem('tp_me');
+      const saved = localStorage.getItem(TP.ns + 'me');
       $('me').innerHTML = team.map(t => `<option value="${esc(t.name)}" ${t.name === saved ? 'selected' : ''}>👷 ${esc(t.name)} (${esc(t.category)})</option>`).join('');
       render();
     }
 
-    function selectMe() { localStorage.setItem('tp_me', $('me').value); render(); }
+    function selectMe() { localStorage.setItem(TP.ns + 'me', $('me').value); render(); }
 
     const URG = { Notfall: 'bg-red-500/20 text-red-400', Dringend: 'bg-orange-500/20 text-orange-400', Normal: 'bg-emerald-500/20 text-emerald-400' };
     const DONE = 'Abgeschlossen & Verrechnet';
