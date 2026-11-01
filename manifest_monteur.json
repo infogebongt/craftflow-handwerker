@@ -1,7 +1,9 @@
 {
   "name": "CraftFlow Monteur-App",
   "short_name": "Monteur",
+  "id": "./monteur_app.html",
   "start_url": "./monteur_app.html",
+  "scope": "./monteur_app.html",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#020617",

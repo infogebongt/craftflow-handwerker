@@ -146,6 +146,24 @@
   }
   document.addEventListener('DOMContentLoaded', demoBar);
 
+  // Firmenname und Logo aus branding.js in Titel und Kopfzeile übernehmen
+  function applyBrand() {
+    const B = window.BRAND; if (!B || !B.short) return;
+    document.title = document.title.replace(/CraftFlow/g, B.short);
+    const h1 = document.querySelector('header h1');
+    if (h1) {
+      [...h1.childNodes].forEach(n => { if (n.nodeType === 3) n.textContent = n.textContent.replace(/CraftFlow/g, B.short); });
+      if (B.logo) {
+        const img = document.createElement('img');
+        img.src = B.logo; img.alt = B.short; img.style.cssText = 'height:22px;width:auto;border-radius:4px;display:inline-block;vertical-align:middle;margin-right:6px';
+        h1.insertBefore(img, h1.firstChild);
+        // Emoji-Symbol durch das Logo ersetzen
+        const first = h1.childNodes[1]; if (first && first.nodeType === 3) first.textContent = first.textContent.replace(/^\s*\S{1,2}\s/, ' ');
+      }
+    }
+  }
+  document.addEventListener('DOMContentLoaded', applyBrand);
+
   const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
   const money = n => (Math.round(n * 100) / 100).toFixed(2);
 
@@ -187,6 +205,52 @@
       const role = await auth.role();
       return !!role && allowed.includes(role);
     },
+    // Dialog "Passwort ändern" für angemeldete Benutzer (nur im Live-Betrieb)
+    // mode 'team': nur die Meister-Zentrale setzt das gemeinsame Monteur-Passwort (ohne Abfrage des alten)
+    async changePassword(mode) {
+      if (!live) { alert('Im Demo-Modus kann das Passwort nicht geändert werden.'); return; }
+      const team = mode === 'team';
+      const { data } = await sb.auth.getSession();
+      const email = data.session && data.session.user.email;
+      if (!email || document.getElementById('tp-pw-modal')) return;
+      const box = document.createElement('div');
+      box.id = 'tp-pw-modal';
+      box.style.cssText = 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;padding:16px';
+      const f = 'width:100%;padding:10px 12px;margin-top:4px;border-radius:10px;border:1px solid #334155;background:#020617;color:#f1f5f9;font-size:14px;box-sizing:border-box';
+      const l = 'display:block;margin-top:12px;font-size:12px;color:#94a3b8';
+      box.innerHTML = '<div style="background:#0f172a;border:1px solid #334155;border-radius:16px;padding:20px;width:100%;max-width:360px;color:#f1f5f9;font-family:inherit">'
+        + '<div style="font-weight:700;font-size:16px">' + (team ? '🔑 Monteur-Passwort setzen' : '🔑 Passwort ändern') + '</div>'
+        + '<div id="tp-pw-user" style="font-size:12px;color:#94a3b8;margin-top:2px"></div>'
+        + (team ? '' : '<label style="' + l + '">Aktuelles Passwort<input id="tp-pw-old" type="password" autocomplete="current-password" style="' + f + '"></label>')
+        + '<label style="' + l + '">Neues Passwort (mind. 8 Zeichen)<input id="tp-pw-new" type="password" autocomplete="new-password" style="' + f + '"></label>'
+        + '<label style="' + l + '">Neues Passwort wiederholen<input id="tp-pw-new2" type="password" autocomplete="new-password" style="' + f + '"></label>'
+        + '<div id="tp-pw-msg" style="margin-top:12px;font-size:12px;min-height:16px"></div>'
+        + '<div style="display:flex;gap:8px;margin-top:8px"><button id="tp-pw-cancel" style="flex:1;padding:10px;border-radius:10px;border:1px solid #334155;background:transparent;color:#cbd5e1;cursor:pointer">Abbrechen</button>'
+        + '<button id="tp-pw-save" style="flex:1;padding:10px;border-radius:10px;border:0;background:#f59e0b;color:#0f172a;font-weight:700;cursor:pointer">Speichern</button></div></div>';
+      document.body.appendChild(box);
+      const $ = id => box.querySelector('#' + id);
+      $('tp-pw-user').textContent = team ? 'Gilt für alle Monteure (gemeinsamer Team-Login)' : email;
+      const say = (t, ok) => { $('tp-pw-msg').textContent = t; $('tp-pw-msg').style.color = ok ? '#34d399' : '#f87171'; };
+      $('tp-pw-cancel').onclick = () => box.remove();
+      $('tp-pw-save').onclick = async () => {
+        const oldPw = team ? '' : $('tp-pw-old').value, n1 = $('tp-pw-new').value, n2 = $('tp-pw-new2').value;
+        if (n1.length < 8) return say('Das neue Passwort braucht mindestens 8 Zeichen.');
+        if (n1 !== n2) return say('Die neuen Passwörter stimmen nicht überein.');
+        if (!team && n1 === oldPw) return say('Das neue Passwort muss anders sein.');
+        $('tp-pw-save').disabled = true;
+        let err;
+        if (team) err = (await sb.rpc('set_team_password', { p_password: n1 })).error;
+        else {
+          const chk = await sb.auth.signInWithPassword({ email, password: oldPw });
+          if (chk.error) { $('tp-pw-save').disabled = false; return say('Das aktuelle Passwort ist falsch.'); }
+          err = (await sb.auth.updateUser({ password: n1 })).error;
+        }
+        if (err) { $('tp-pw-save').disabled = false; return say('Fehler: ' + err.message); }
+        say('Passwort geändert.', true);
+        setTimeout(() => box.remove(), 1200);
+      };
+      $(team ? 'tp-pw-new' : 'tp-pw-old').focus();
+    },
     async logout() {
       sessionStorage.removeItem('tp_demo_role');
       if (demo) { sessionStorage.removeItem('tp_demo'); location.href = 'index.html'; return; }
@@ -198,4 +262,14 @@
   window.TP = { store, auth, esc, money, calcInvoice, C, ns: NS, film };
 
   if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+
+  // Knopf "Als App installieren" (PC, Android): erscheint nur, wenn der Browser die Installation dieser App anbietet
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    const b = document.createElement('button');
+    b.textContent = '📲 Als App installieren';
+    b.style.cssText = 'position:fixed;right:12px;bottom:12px;z-index:9998;padding:10px 14px;border-radius:999px;border:0;background:#f59e0b;color:#0f172a;font-weight:700;font-size:13px;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.4)';
+    b.onclick = () => { e.prompt(); e.userChoice.finally(() => b.remove()); };
+    document.body.appendChild(b);
+  });
 })();

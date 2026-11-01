@@ -1,4 +1,4 @@
-const CACHE_NAME = 'craftflow-v1';
+const CACHE_NAME = 'craftflow-v2';
 const urlsToCache = [
   './',
   './index.html',
@@ -7,6 +7,7 @@ const urlsToCache = [
   './monteur_app.html',
   './meister_dashboard.html',
   './config.js',
+  './branding.js',
   './store.js',
   './icon.svg'
 ];

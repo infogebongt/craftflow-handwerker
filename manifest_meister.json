@@ -1,7 +1,9 @@
 {
   "name": "CraftFlow Meister-Zentrale",
   "short_name": "Firma",
+  "id": "./meister_dashboard.html",
   "start_url": "./meister_dashboard.html",
+  "scope": "./meister_dashboard.html",
   "display": "standalone",
   "background_color": "#020617",
   "theme_color": "#020617",

@@ -1,6 +1,7 @@
-// Zentrale Konfiguration der CraftFlow Handwerker-Suite.
+// Technische Konfiguration. Firmenname, Adresse usw. kommen aus branding.js.
 // Ohne SUPABASE_URL/KEY läuft alles im Demo-Modus (Daten nur im Browser dieses Geräts).
-// Für den Echtbetrieb mit mehreren Geräten: supabase_setup.sql ausführen und hier eintragen.
+// Für den Echtbetrieb: eigenes Supabase-Projekt pro Kunde anlegen, supabase_setup.sql ausführen, hier eintragen.
+const B = window.BRAND || {};
 window.TP_CONFIG = {
   SUPABASE_URL: "https://yggegnhnzocxncgdzihe.supabase.co",
   SUPABASE_KEY: "sb_publishable_R9t3CWdoM7vzCbClh2yx8Q_lXE4pWgc",
@@ -12,10 +13,11 @@ window.TP_CONFIG = {
   },
 
   PRACTICE: {
-    name: "CraftFlow Haustechnik AG",
-    address: "Musterstrasse 12 | 8000 Zürich",
-    uid: "CHE-123.456.789 MWST",
-    phone: "+41 44 000 00 00"
+    name: B.name || "Ihre Firma",
+    address: B.address || "",
+    uid: B.uid || "",
+    iban: B.iban || "",           // leer = Rechnung ohne QR-Einzahlungsschein
+    phone: B.phone || ""
   },
 
   VAT_RATE: 0.081,

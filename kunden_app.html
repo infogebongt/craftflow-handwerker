@@ -11,6 +11,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="branding.js"></script>
   <script src="config.js"></script>
   <script src="store.js"></script>
 </head>
@@ -186,6 +187,13 @@
       renderMine();
       store.subscribe('tickets', renderMine);
       setInterval(renderMine, 15000);
+    });
+  </script>
+  <script>
+    // Gewerke aus branding.js, falls vorhanden
+    document.addEventListener('DOMContentLoaded', () => {
+      const B = window.BRAND, s = document.getElementById('pet-trade');
+      if (B && B.trades && s) s.innerHTML = B.trades.map(t => '<option>' + TP.esc(t) + '</option>').join('');
     });
   </script>
 </body>

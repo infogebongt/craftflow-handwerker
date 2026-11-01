@@ -12,6 +12,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="branding.js"></script>
   <script src="config.js"></script>
   <script src="store.js"></script>
 </head>
@@ -40,6 +42,8 @@
           <div class="w-3.5 h-3.5 rounded-full bg-emerald-500 animate-pulse"></div>
           <h1 class="font-bold text-xl text-amber-400 tracking-wide">🔧 CraftFlow <span class="text-xs text-slate-400 font-normal">| Meister-Zentrale</span></h1>
           <span id="mode" class="text-[10px] px-2 py-0.5 rounded-full border"></span>
+          <button data-pw onclick="TP.auth.changePassword()" class="text-[10px] px-2 py-0.5 rounded-full border border-slate-700 text-slate-400 hover:text-slate-100">🔑 Passwort</button>
+          <button data-pw onclick="TP.auth.changePassword('team')" class="text-[10px] px-2 py-0.5 rounded-full border border-slate-700 text-slate-400 hover:text-slate-100">🔑 Monteur-Passwort</button>
           <button onclick="TP.auth.logout()" class="text-[10px] px-2 py-0.5 rounded-full border border-slate-700 text-slate-400 hover:text-slate-100">Abmelden</button>
         </div>
         <nav class="flex bg-slate-950 p-1.5 rounded-xl border border-slate-800 overflow-x-auto max-w-full gap-1" id="nav"></nav>
@@ -154,12 +158,15 @@
       $('auth-overlay').classList.add('hidden');
       $('app').classList.remove('hidden');
       $('app').classList.add('flex');
+      document.querySelectorAll('[data-pw]').forEach(b => b.classList.toggle('hidden', !store.live));  // Passwort ändern nur im Live-Betrieb
       $('mode').innerText = store.live ? '🟢 Live (Supabase)' : '🟡 Demo-Modus (nur dieses Gerät)';
       $('mode').className = 'text-[10px] px-2 py-0.5 rounded-full border ' + (store.live
         ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-orange-500/10 text-orange-400 border-orange-500/20');
       try {
-        if (!(await store.list('team')).length) for (const m of SEED_TEAM) await store.insert('team', { ...m, role: roleOf(m.category) });
-        if (!(await store.list('customers')).length) for (const c of SEED_CUSTOMERS) await store.insert('customers', c);
+        if (!store.live) {
+          if (!(await store.list('team')).length) for (const m of SEED_TEAM) await store.insert('team', { ...m, role: roleOf(m.category) });
+          if (!(await store.list('customers')).length) for (const c of SEED_CUSTOMERS) await store.insert('customers', c);
+        }
       } catch (e) { alert('Datenbank-Fehler: ' + e.message); }
       await load();
       ['tickets', 'team', 'customers'].forEach(t => store.subscribe(t, load));
@@ -192,6 +199,12 @@
         closeModal('modal-customer');
         await load();
       });
+    }
+    // Nur unverrechnete Aufträge (Rechnungen unterliegen der Aufbewahrungspflicht und bleiben bestehen)
+    function deleteTicket(id) {
+      const t = tickets.find(x => x.id === id);
+      if (!t || t.status === DONE) return;
+      if (confirm('Auftrag #' + id + ' (' + t.customer_name + ') wirklich löschen? Das kann nicht rückgängig gemacht werden.')) safe(async () => { await store.remove('tickets', id); await load(); });
     }
     function deleteCustomer(id) {
       if (confirm('Kunden wirklich löschen?')) safe(async () => { await store.remove('customers', id); await load(); });
@@ -284,6 +297,61 @@
 
     // ---- PDF ----
     const invNo = t => `RE-${new Date(t.created_at || Date.now()).getFullYear()}-${String(t.id).padStart(4, '0')}`;
+    // Schweizer QR-Rechnung (Zahlteil + Empfangsschein am unteren Rand der Seite, nach SIX-Style-Guide)
+    function drawQrBill(doc, P, r, t) {
+      const iban = P.iban.replace(/\s/g, '');
+      const [l1, l2] = String(P.address || '').split('|').map(s => s.trim());
+      const ms = (l1 || '').match(/^(.*?)\s+(\d+[a-zA-Z]?)$/);
+      const street = ms ? ms[1] : (l1 || ''), nr = ms ? ms[2] : '';
+      const mz = (l2 || '').match(/^(\d{4})\s+(.+)$/);
+      const zip = mz ? mz[1] : '', town = mz ? mz[2] : (l2 || '');
+      const amount = Number(r.brutto).toFixed(2);
+      const msg = 'Rechnung ' + invNo(t);
+      const payload = ['SPC', '0200', '1', iban, 'S', P.name, street, nr, zip, town, 'CH',
+        ...Array(7).fill(''), amount, 'CHF', ...Array(7).fill(''), 'NON', '', msg, 'EPD'].join('\r\n');
+      const ibanFmt = iban.replace(/(.{4})/g, '$1 ').trim();
+      const addr1 = (street + ' ' + nr).trim(), addr2 = (zip + ' ' + town).trim();
+      const y0 = 192;
+
+      doc.setTextColor(0); doc.setDrawColor(0); doc.setLineWidth(0.2);
+      doc.setLineDash([1.5, 1.5], 0); doc.line(0, y0, 210, y0); doc.line(62, y0, 62, 297); doc.setLineDash([]);
+      const label = (txt, x, y, size) => { doc.setFont('helvetica', 'bold'); doc.setFontSize(size); doc.text(txt, x, y); };
+      const value = (txt, x, y, size) => { doc.setFont('helvetica', 'normal'); doc.setFontSize(size); doc.text(txt, x, y); };
+      const box = (x, y, w, h) => {
+        const c = 3; doc.setLineWidth(0.3);
+        [[x, y, 1, 1], [x + w, y, -1, 1], [x, y + h, 1, -1], [x + w, y + h, -1, -1]].forEach(([px, py, dx, dy]) => {
+          doc.line(px, py, px + dx * c, py); doc.line(px, py, px, py + dy * c);
+        });
+      };
+
+      // Empfangsschein
+      label('Empfangsschein', 5, y0 + 10, 11);
+      label('Konto / Zahlbar an', 5, y0 + 17, 6);
+      [ibanFmt, P.name, addr1, addr2].forEach((s, i) => value(s, 5, y0 + 20.5 + i * 3.4, 8));
+      label('Zahlbar durch', 5, y0 + 38, 6); box(5, y0 + 40, 52, 20);
+      label('Währung', 5, y0 + 68, 6); label('Betrag', 22, y0 + 68, 6);
+      value('CHF', 5, y0 + 72, 8); value(amount, 22, y0 + 72, 8);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(6); doc.text('Annahmestelle', 57, y0 + 86, { align: 'right' });
+
+      // Zahlteil
+      label('Zahlteil', 67, y0 + 10, 11);
+      qrcode.stringToBytes = qrcode.stringToBytesFuncs['UTF-8'];
+      const qr = qrcode(0, 'M'); qr.addData(payload); qr.make();
+      const n = qr.getModuleCount(), qx = 67, qy = y0 + 17, mod = 46 / n;
+      doc.setFillColor(0, 0, 0);
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (qr.isDark(i, j)) doc.rect(qx + j * mod, qy + i * mod, mod + 0.02, mod + 0.02, 'F');
+      const cx = qx + 23, cy = qy + 23;
+      doc.setFillColor(255, 255, 255); doc.rect(cx - 3.5, cy - 3.5, 7, 7, 'F');
+      doc.setFillColor(0, 0, 0); doc.rect(cx - 3, cy - 3, 6, 6, 'F');
+      doc.setFillColor(255, 255, 255); doc.rect(cx - 0.6, cy - 1.9, 1.2, 3.8, 'F'); doc.rect(cx - 1.9, cy - 0.6, 3.8, 1.2, 'F');
+      label('Währung', 67, y0 + 68, 8); label('Betrag', 90, y0 + 68, 8);
+      value('CHF', 67, y0 + 73, 10); value(amount, 90, y0 + 73, 10);
+
+      label('Konto / Zahlbar an', 118, y0 + 10, 8);
+      [ibanFmt, P.name, addr1, addr2].forEach((s, i) => value(s, 118, y0 + 14.5 + i * 4.2, 10));
+      label('Zusätzliche Informationen', 118, y0 + 35, 8); value(msg, 118, y0 + 39.5, 10);
+      label('Zahlbar durch', 118, y0 + 50, 8); box(118, y0 + 53, 65, 25);
+    }
     function downloadPDF(id) {
       const t = tickets.find(x => x.id === id);
       if (!t || !t.report) return;
@@ -296,7 +364,7 @@
         doc.text(`${amt} CHF`, 190, y, { align: 'right' });
       };
 
-      doc.setFont('helvetica', 'bold'); doc.setFontSize(22); doc.setTextColor(217, 119, 6);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(22); { const h = ((window.BRAND && BRAND.color) || '#d97706').replace('#', ''); doc.setTextColor(parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)); }
       doc.text(P.name, 20, 20);
       doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(100);
       doc.text(`${P.address} | ${P.uid} | Tel. ${P.phone}`, 20, 26);
@@ -333,6 +401,7 @@
       doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(120);
       doc.text(`Einsatz: ${r.treatment}`.slice(0, 100), 20, y + 16);
       doc.text(`Vielen Dank für Ihr Vertrauen! Zahlbar innert ${C.PAYMENT_DAYS} Tagen ohne Abzug.`, 20, y + 24);
+      if (P.iban) drawQrBill(doc, P, r, t);
       doc.save(`Rechnung_${invNo(t)}.pdf`);
     }
 
@@ -376,7 +445,8 @@
                 ${team.map(m => `<option value="${esc(m.name)}" ${t.tech === m.name ? 'selected' : ''}>👷 ${esc(m.name)} (${esc(m.category)})</option>`).join('')}
               </select>
               ${t.status !== DONE
-                ? `<button onclick="openReport(${Number(t.id)})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl">📝 Einsatz erfassen</button>`
+                ? `<button onclick="openReport(${Number(t.id)})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-3 py-2 rounded-xl">📝 Einsatz erfassen</button>
+                   <button onclick="deleteTicket(${Number(t.id)})" title="Auftrag löschen" class="p-2 bg-slate-800 hover:bg-red-500/20 text-red-400 rounded-lg text-xs">🗑️</button>`
                 : '<span class="text-xs px-3 py-1.5 rounded-full font-bold bg-sky-500/20 text-sky-400 border border-sky-500/30">✓ Abgeschlossen & Verrechnet</span>'}
             </div>
           </div>`).join('')}
